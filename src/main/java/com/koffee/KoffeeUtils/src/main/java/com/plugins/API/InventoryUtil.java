@@ -6,8 +6,10 @@ import com.koffee.Packets.MousePackets;
 import com.koffee.Packets.WidgetPackets;
 import net.runelite.api.widgets.Widget;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class InventoryUtil {
     public static boolean useItemNoCase(String name, String... actions) {
@@ -107,6 +109,16 @@ public class InventoryUtil {
         return false;
     }
 
+    public static boolean hasAnyItems(Collection<Integer> itemIds) {
+        for (Integer id : itemIds) {
+            if (hasItem(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static boolean hasItem(int id) {
         return getItemAmount(id) > 0;
     }
@@ -117,5 +129,12 @@ public class InventoryUtil {
 
     public static int emptySlots() {
         return 28 - Inventory.search().result().size();
+    }
+
+    public static boolean isFull() {
+        return emptySlots() <= 0;
+    }
+    public static boolean isEmpty() {
+        return emptySlots() >= 28;
     }
 }

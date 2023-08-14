@@ -17,41 +17,37 @@ public class Constants {
     public static final WorldArea RUNE_DRAGONS_DOOR = new WorldArea(1562, 5057, 12, 23, 0);
     public static final WorldArea RUNE_DRAGONS = new WorldArea(1574, 5061, 26, 27, 0);
     // Potions
-    public Set<Integer> EXTENDED_ANTIFIRE_POTS = Set.of(
+    public static final Set<Integer> EXTENDED_ANTIFIRE_POTS = Set.of(
             ItemID.EXTENDED_ANTIFIRE1,
             ItemID.EXTENDED_ANTIFIRE2,
             ItemID.EXTENDED_ANTIFIRE3,
             ItemID.EXTENDED_ANTIFIRE4
     );
-    public Set<Integer> SUPER_EXTENDED_ANTIFIRE_POTS = Set.of(
+    public static final Set<Integer> SUPER_EXTENDED_ANTIFIRE_POTS = Set.of(
             ItemID.EXTENDED_SUPER_ANTIFIRE1,
             ItemID.EXTENDED_SUPER_ANTIFIRE2,
             ItemID.EXTENDED_SUPER_ANTIFIRE3,
             ItemID.EXTENDED_SUPER_ANTIFIRE4
     );
-    public Set<Integer> PRAYER_POTS = Set.of(
+    public static final Set<Integer> PRAYER_POTS = Set.of(
             ItemID.PRAYER_POTION1,
             ItemID.PRAYER_POTION2,
             ItemID.PRAYER_POTION3,
-            ItemID.PRAYER_POTION4,
-            ItemID.SUPER_RESTORE1,
-            ItemID.SUPER_RESTORE2,
-            ItemID.SUPER_RESTORE3,
-            ItemID.SUPER_RESTORE4
+            ItemID.PRAYER_POTION4
     );
-    public Set<Integer> SUPER_COMBAT_POTS = Set.of(
+    public static final Set<Integer> SUPER_COMBAT_POTS = Set.of(
             ItemID.SUPER_COMBAT_POTION1,
             ItemID.SUPER_COMBAT_POTION2,
             ItemID.SUPER_COMBAT_POTION3,
             ItemID.SUPER_COMBAT_POTION4
     );
-    public Set<Integer> DIVINE_SUPER_COMBAT_POTS = Set.of(
+    public static final Set<Integer> DIVINE_SUPER_COMBAT_POTS = Set.of(
             ItemID.DIVINE_SUPER_COMBAT_POTION1,
             ItemID.DIVINE_SUPER_COMBAT_POTION2,
             ItemID.DIVINE_SUPER_COMBAT_POTION3,
             ItemID.DIVINE_SUPER_COMBAT_POTION4
     );
-    public Set<Integer> DIGSITE_PENDANTS = Set.of(
+    public static final Set<Integer> DIGSITE_PENDANTS = Set.of(
             ItemID.DIGSITE_PENDANT_1,
             ItemID.DIGSITE_PENDANT_2,
             ItemID.DIGSITE_PENDANT_3,
