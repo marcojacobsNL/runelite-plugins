@@ -12,6 +12,8 @@ import com.koffee.InteractionApi.TileObjectInteraction;
 import com.koffee.KoffeeUtils.src.main.java.com.plugins.API.InventoryUtil;
 import com.koffee.KoffeeUtils.src.main.java.com.plugins.API.ObjectUtil;
 import com.koffee.PacketUtils.PacketUtilsPlugin;
+import com.koffee.Packets.MousePackets;
+import com.koffee.Packets.WidgetPackets;
 import com.koffee.RuneDragons.src.main.java.com.koffee.data.State;
 import com.koffee.RuneDragons.src.main.java.com.koffee.utils.CalculationUtils;
 import lombok.Getter;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -35,7 +38,6 @@ import javax.inject.Inject;
 import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -55,7 +57,6 @@ import static com.koffee.RuneDragons.src.main.java.com.koffee.data.Constants.*;
 public class RuneDragonsPlugin extends Plugin {
 
     public static Player player;
-    public static ArrayList<Integer> inventorySetup = new ArrayList<>();
     // Variables
     private boolean started;
     private Instant timer;
@@ -107,6 +108,10 @@ public class RuneDragonsPlugin extends Plugin {
             sendDebugMessage("You must be set to resizable mode to use RuneDragons.");
             return;
         }
+        if (client.getWidget(WidgetInfo.BANK_PIN_CONTAINER) != null) {
+            log.info("Enter bank pin manually");
+            return;
+        }
         state = getCurrentState();
         switch (state) {
             case TIMEOUT:
@@ -130,8 +135,10 @@ public class RuneDragonsPlugin extends Plugin {
             case TELEPORT_TO_EDGE:
                 teleportEdge();
                 break;
-            case MOVING:
             case TELEPORT_LITH:
+                teleportLith();
+                break;
+            case MOVING:
             case DRINK_POOL:
             case ENTER_DRAGONS:
             case ANIMATING:
@@ -198,6 +205,9 @@ public class RuneDragonsPlugin extends Plugin {
 
         if (inLithkren()) {
             timeout = tickDelay();
+            if(client.getLocalPlayer().getWorldArea().intersectsWith(LITH_TELE)) {
+                return State.
+            }
             if (inDragons()) {
                 return State.ENTER_DRAGONS;
             }
@@ -215,7 +225,9 @@ public class RuneDragonsPlugin extends Plugin {
         if (!started) {
             overlayManager.add(runeDragonsOverlay);
             timer = Instant.now();
-            initInventory();
+            if (!shouldRestock()) {
+                deposited = true;
+            }
             started = true;
         } else {
             resetPlugin();
@@ -237,38 +249,8 @@ public class RuneDragonsPlugin extends Plugin {
         overlayManager.remove(runeDragonsOverlay);
         timer = null;
         timeout = 0;
-        inventorySetup.clear();
         started = false;
         deposited = false;
-    }
-
-    private void initInventory() {
-        inventorySetup.clear();
-        if (config.useVengeance()) {
-            inventorySetup.add(ItemID.RUNE_POUCH);
-        }
-        if (config.superantifire()) {
-            inventorySetup.add(ItemID.EXTENDED_SUPER_ANTIFIRE4);
-        }
-        if (!config.superantifire()) {
-            inventorySetup.add(ItemID.EXTENDED_ANTIFIRE4);
-        }
-        if (config.supercombats()) {
-            inventorySetup.add(ItemID.DIVINE_SUPER_COMBAT_POTION4);
-        }
-        if (!config.supercombats()) {
-            inventorySetup.add(ItemID.SUPER_COMBAT_POTION4);
-        }
-        if (!config.usePOHdigsite()) {
-            inventorySetup.add(ItemID.DIGSITE_PENDANT_5);
-        }
-        if (config.useSpec()) {
-            inventorySetup.add(config.specId());
-        }
-        inventorySetup.add(ItemID.PRAYER_POTION4);
-        inventorySetup.add(ItemID.TELEPORT_TO_HOUSE);
-        inventorySetup.add(config.foodID());
-        log.info("required inventory items: {}", inventorySetup.toString());
     }
 
     protected long sleepDelay() {
@@ -421,19 +403,23 @@ public class RuneDragonsPlugin extends Plugin {
             return;
         }
         if (superCombat.isPresent() && !InventoryUtil.hasItem(ItemID.SUPER_COMBAT_POTION4) && !config.supercombats()) {
-            BankInteraction.withdrawX(superCombat.get(), 1);
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(superCombat.get(), "Withdraw-1");
             return;
         }
         if (divineSuperCombat.isPresent() && !InventoryUtil.hasItem(ItemID.DIVINE_SUPER_COMBAT_POTION4) && config.supercombats()) {
-            BankInteraction.withdrawX(divineSuperCombat.get(), 1);
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(divineSuperCombat.get(), "Withdraw-1");
             return;
         }
         if (extended.isPresent() && !InventoryUtil.hasItem(ItemID.EXTENDED_ANTIFIRE4) && !config.superantifire()) {
-            BankInteraction.withdrawX(extended.get(), 1);
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(extended.get(), "Withdraw-1");
             return;
         }
         if (superExtended.isPresent() && !InventoryUtil.hasItem(ItemID.EXTENDED_SUPER_ANTIFIRE4) && config.superantifire()) {
-            BankInteraction.withdrawX(superExtended.get(), 1);
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(superExtended.get(), "Withdraw-1");
             return;
         }
         if (InventoryUtil.getItemAmount(ItemID.PRAYER_POTION4) < config.praypotAmount()) {
@@ -445,11 +431,13 @@ public class RuneDragonsPlugin extends Plugin {
             return;
         }
         if (pendant.isPresent() && !InventoryUtil.hasItem(ItemID.DIGSITE_PENDANT_5) && !config.usePOHdigsite()) {
-            BankInteraction.withdrawX(pendant.get(), 1);
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(pendant.get(), "Withdraw-1");
         }
     }
 
     private void teleportHome() {
+        client.runScript(138);
         InventoryInteraction.useItem(ItemID.TELEPORT_TO_HOUSE, "Break");
     }
 
@@ -460,8 +448,8 @@ public class RuneDragonsPlugin extends Plugin {
 
     private void teleportLith() {
         if (config.usePOHdigsite()) {
-            Optional<TileObject> glory = ObjectUtil.getNearest(33418);
-            glory.ifPresent(tileObject -> TileObjectInteraction.interact(tileObject, "Lithkren"));
+            Optional<TileObject> digsite = ObjectUtil.getNearest(33418);
+            digsite.ifPresent(tileObject -> TileObjectInteraction.interact(tileObject, "Lithkren"));
         }
     }
 

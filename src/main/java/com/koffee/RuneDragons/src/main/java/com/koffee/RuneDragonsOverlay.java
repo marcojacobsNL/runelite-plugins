@@ -19,14 +19,14 @@ class RuneDragonsOverlay extends OverlayPanel {
         config = runeDragonsConfig;
 
         setPosition(OverlayPosition.BOTTOM_LEFT);
-        setPreferredSize(new Dimension(160, 160));
+        setPreferredSize(new Dimension(250, 160));
     }
 
     @Override
     public Dimension render(Graphics2D graphics) {
 
         panelComponent.getChildren().add(TitleComponent.builder()
-                .text("Rooftop Agility")
+                .text("Rune Dragons Killer")
                 .color(Color.WHITE)
                 .build());
 

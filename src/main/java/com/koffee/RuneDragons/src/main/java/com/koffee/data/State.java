@@ -1,27 +1,9 @@
 package com.koffee.RuneDragons.src.main.java.com.koffee.data;
 
 public enum State {
-    ATTACK_DRAGON,
-    DRINK_POOL,
-    ENTER_DOOR,
-    FIND_BANK,
-    LOOT,
-    TELEPORT_TO_EDGE,
+    BAKING,
+    TRAVEL,
     TIMEOUT,
     MOVING,
-    ANIMATING,
-    DEPOSIT,
-    DRINK,
-    ENTER_DRAGONS,
-    IN_COMBAT,
-    PRAY,
-    TELEPORT_HOME,
-    WALK_DOOR,
-    DOWN_STAIRS,
-    EAT_FOOD,
-    EQUIP,
-    LOGOUT,
-    SPEC,
-    TELEPORT_LITH,
-    WITHDRAW,
+    ANIMATING
 }
