@@ -330,8 +330,9 @@ public class RuneDragonsPlugin extends Plugin
 			return State.ANIMATING;
 		}
 
-		if (shouldRestock() && !InventoryUtil.hasItem(ItemID.TELEPORT_TO_HOUSE) && !inDragons() && !inEdgeville() && !inPOH() && !inLithkren())
+		if (shouldRestock() && InventoryUtil.getItemAmount(ItemID.TELEPORT_TO_HOUSE, true) <= 1 && !inDragons() && !inEdgeville() && !inPOH() && !inLithkren())
 		{
+			log.info("Teleport house tab " + InventoryUtil.getItemAmount(ItemID.TELEPORT_TO_HOUSE, true));
 			return State.LOGOUT;
 		}
 
@@ -488,6 +489,10 @@ public class RuneDragonsPlugin extends Plugin
 			Item mainWeapon = getWeapon(EquipmentInventorySlot.WEAPON.getSlotIdx());
 			if (mainWeapon != null)
 			{
+				if (config.debugMode())
+				{
+					koffeeUtils.sendDebugMessage("Main weapon is not null!");
+				}
 				if (currentNPC == player.getInteracting() &&
 					(client.getVarpValue(VarPlayer.SPECIAL_ATTACK_PERCENT) >= config.specTreshhold() * 10) &&
 					(getNpcHealth(currentNPC, 330) >= config.specHp()) &&
@@ -506,6 +511,13 @@ public class RuneDragonsPlugin extends Plugin
 					{
 						return SubState.USE_SPECIAL;
 					}
+				}
+			}
+			else
+			{
+				if (config.debugMode())
+				{
+					koffeeUtils.sendDebugMessage("Main weapon is null");
 				}
 			}
 		}
@@ -724,9 +736,7 @@ public class RuneDragonsPlugin extends Plugin
 
 	protected Item getWeapon(int slot)
 	{
-		assert client.isClientThread();
-
-		final ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
 
 		if (equipment == null)
 		{
@@ -792,6 +802,14 @@ public class RuneDragonsPlugin extends Plugin
 			{
 				return true;
 			}
+		}
+		if (config.useSpec() && !InventoryUtil.hasItem(config.specId()))
+		{
+			if (config.debugMode())
+			{
+				koffeeUtils.sendDebugMessage("We are missing spec weapon");
+			}
+			return true;
 		}
 		if (config.useVengeance() && (!config.useDivinePouch() && !InventoryUtil.hasItem(ItemID.RUNE_POUCH) || (config.useDivinePouch() && !InventoryUtil.hasItem(ItemID.DIVINE_RUNE_POUCH))))
 		{
@@ -942,7 +960,7 @@ public class RuneDragonsPlugin extends Plugin
 			koffeeUtils.sendDebugMessage("We are depositing our items");
 		}
 		BankUtil.depositAllExcept(inventorySetup);
-		if (!BankUtil.containsExcept(inventorySetup))
+		if (!BankUtil.containsExcept(inventorySetup) || InventoryUtil.isEmpty())
 		{
 			deposited = true;
 		}
@@ -964,9 +982,41 @@ public class RuneDragonsPlugin extends Plugin
 		Optional<Widget> food = Bank.search().withId(config.foodID()).first();
 		Optional<Widget> pouch = Bank.search().withId(ItemID.RUNE_POUCH).first();
 		Optional<Widget> divinePouch = Bank.search().withId(ItemID.DIVINE_RUNE_POUCH).first();
+		Optional<Widget> specWeapon = Bank.search().withId(config.specId()).first();
 
 		if (house.isEmpty() || food.isEmpty() || prayerPot.isEmpty() || superCombat.isEmpty() && !config.supercombats() || divineSuperCombat.isEmpty() && config.supercombats() || extended.isEmpty() && !config.superantifire() || superExtended.isEmpty() && config.superantifire())
 		{
+			if (config.debugMode())
+			{
+				if (house.isEmpty())
+				{
+					koffeeUtils.sendDebugMessage("Missing house tab");
+				}
+				if (food.isEmpty())
+				{
+					koffeeUtils.sendDebugMessage("Missing food");
+				}
+				if (prayerPot.isEmpty())
+				{
+					koffeeUtils.sendDebugMessage("Missing prayer pot");
+				}
+				if (superCombat.isEmpty() && !config.supercombats())
+				{
+					koffeeUtils.sendDebugMessage("Missing super combat");
+				}
+				if (divineSuperCombat.isEmpty() && config.supercombats())
+				{
+					koffeeUtils.sendDebugMessage("Missing divine super combat");
+				}
+				if (extended.isEmpty() && !config.superantifire())
+				{
+					koffeeUtils.sendDebugMessage("Missing extended antifire");
+				}
+				if (superExtended.isEmpty() && config.superantifire())
+				{
+					koffeeUtils.sendDebugMessage("Missing super extended antifire");
+				}
+			}
 			koffeeUtils.sendGameMessage("Missing required items. Stopping.");
 			resetPlugin();
 			return;
@@ -1015,6 +1065,18 @@ public class RuneDragonsPlugin extends Plugin
 		if (InventoryUtil.getItemAmount(ItemID.PRAYER_POTION4) < config.praypotAmount())
 		{
 			BankInteraction.withdrawX(prayerPot.get(), config.praypotAmount() - InventoryUtil.getItemAmount(ItemID.PRAYER_POTION4));
+			return;
+		}
+		if (config.useSpec() && specWeapon.isPresent() && !InventoryUtil.hasItem(config.specId()))
+		{
+			BankInteraction.withdraw1(specWeapon.get());
+			return;
+		}
+		else if (config.useSpec() && specWeapon.isEmpty() && !InventoryUtil.hasItem(config.specId()))
+		{
+			koffeeUtils.sendGameMessage("Missing spec weapon. Stopping.");
+			resetPlugin();
+
 			return;
 		}
 		if (InventoryUtil.getItemAmount(config.foodID()) < config.foodAmount())
