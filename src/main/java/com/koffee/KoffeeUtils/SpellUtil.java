@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.API;
+package com.koffee.KoffeeUtils;
 
 import com.koffee.PacketUtils.WidgetInfoExtended;
 import net.runelite.api.Client;

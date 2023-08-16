@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.API;
+package com.koffee.KoffeeUtils;
 
 import com.koffee.EthanApiPlugin.Collections.TileObjects;
 import com.koffee.EthanApiPlugin.Collections.query.TileObjectQuery;
@@ -40,16 +40,16 @@ public class ObjectUtil {
             ObjectComposition comp = TileObjectQuery.getObjectComposition(tileObject);
             if (comp == null)
                 return false;
-            return comp.getName().toLowerCase().equals(name.toLowerCase());
+            return comp.getName().equalsIgnoreCase(name);
         });
     }
 
     public static TileObjectQuery nameContainsNoCase(String name) {
         return TileObjects.search().filter(tileObject -> {
-                    ObjectComposition comp = TileObjectQuery.getObjectComposition(tileObject);
-                    if (comp == null)
-                        return false;
-                    return comp.getName().toLowerCase().contains(name.toLowerCase());
-                });
+            ObjectComposition comp = TileObjectQuery.getObjectComposition(tileObject);
+            if (comp == null)
+                return false;
+            return comp.getName().toLowerCase().contains(name.toLowerCase());
+        });
     }
 }

@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.BreakHandler;
+package com.koffee.KoffeeUtils.BreakHandler;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.Plugin;
@@ -92,9 +92,9 @@ public class ReflectBreakHandler {
 
         chinMethods = new HashMap<>();
         for (Plugin p : pluginManager.getPlugins()) {
-            if (p.getClass().getSimpleName().toLowerCase().equals("chinbreakhandlerplugin")) {
+            if (p.getClass().getSimpleName().equalsIgnoreCase("chinbreakhandlerplugin")) {
                 for (Field f : p.getClass().getDeclaredFields()) {
-                    if (f.getName().toLowerCase().equals("chinbreakhandler")) {
+                    if (f.getName().equalsIgnoreCase("chinbreakhandler")) {
                         f.setAccessible(true);
                         try {
                             instance = f.get(p);

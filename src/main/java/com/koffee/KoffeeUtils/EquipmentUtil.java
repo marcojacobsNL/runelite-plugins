@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.API;
+package com.koffee.KoffeeUtils;
 
 import com.koffee.EthanApiPlugin.Collections.Equipment;
 
@@ -7,7 +7,7 @@ public class EquipmentUtil {
         return Equipment.search().nameContainsNoCase(name).first().isPresent();
     }
 
-    public static boolean hasItems(String ...names) {
+    public static boolean hasItems(String... names) {
         for (String name : names) {
             if (!hasItem(name)) {
                 return false;

@@ -1,48 +1,17 @@
-package com.koffee.RuneDragons.src.main.java.com.koffee;
+package com.koffee.RuneDragons;
 
 import net.runelite.client.config.*;
 
 @ConfigGroup("RuneDragons")
 public interface RuneDragonsConfig extends Config {
-    @ConfigSection(name = "Sleep Delay Configuration", description = "Configure how the bot handles sleep delays", position = 0, closedByDefault = true)
-    String delayConfig = "delayConfig";
-    @ConfigSection(name = "Tick Delay Configuration", description = "Configure how the bot handles tick delays", position = 1, closedByDefault = true)
+    @ConfigSection(name = "Tick Delay Configuration", description = "Configure how the bot handles tick delays", position = 4, closedByDefault = true)
     String tickConfig = "tickConfig";
-    @ConfigSection(name = "Logic Configuration", description = "", position = 3)
+    @ConfigSection(name = "Logic Configuration", description = "", position = 1)
     String logicConfig = "logicConfig";
-    @ConfigSection(name = "Potions & Food Configuration", description = "", position = 4)
+    @ConfigSection(name = "Potions & Food Configuration", description = "", position = 2)
     String potionConfig = "potionConfig";
-    @ConfigSection(name = "Damage Configuration", description = "", position = 5)
+    @ConfigSection(name = "Damage Configuration", description = "", position = 3)
     String damageConfig = "damageConfig";
-
-    @Range(min = 0, max = 550)
-    @ConfigItem(keyName = "sleepMin", name = "Sleep Min", description = "", position = 2, section = "delayConfig")
-    default int sleepMin() {
-        return 60;
-    }
-
-    @Range(min = 0, max = 550)
-    @ConfigItem(keyName = "sleepMax", name = "Sleep Max", description = "", position = 3, section = "delayConfig")
-    default int sleepMax() {
-        return 350;
-    }
-
-    @Range(min = 0, max = 550)
-    @ConfigItem(keyName = "sleepTarget", name = "Sleep Target", description = "", position = 4, section = "delayConfig")
-    default int sleepTarget() {
-        return 100;
-    }
-
-    @Range(min = 0, max = 550)
-    @ConfigItem(keyName = "sleepDeviation", name = "Sleep Deviation", description = "", position = 5, section = "delayConfig")
-    default int sleepDeviation() {
-        return 10;
-    }
-
-    @ConfigItem(keyName = "sleepWeightedDistribution", name = "Sleep Weighted Distribution", description = "Shifts the random distribution towards the lower end at the target, otherwise it will be an even distribution", position = 6, section = "delayConfig")
-    default boolean sleepWeightedDistribution() {
-        return false;
-    }
 
     @Range(min = 0, max = 10)
     @ConfigItem(keyName = "tickDelayMin", name = "Game Tick Min", description = "", position = 8, section = "tickConfig")
@@ -78,9 +47,9 @@ public interface RuneDragonsConfig extends Config {
         return true;
     }
 
-    @ConfigItem(keyName = "usePOHdigsite", name = "Use POH digsite", description = "Enable to use POH digsite instead of necklace", position = 61, section = "logicConfig")
-    default boolean usePOHdigsite() {
-        return true;
+    @ConfigItem(keyName = "useDivinePouch", name = "Use Divine Rune Pouch", description = "Enable to use divine rune pouch, disable to use regular.", position = 61, section = "logicConfig")
+    default boolean useDivinePouch() {
+        return false;
     }
 
     @ConfigItem(keyName = "lootValue", name = "Minimum loot value", description = "Provide of minimum GP value to loot", position = 63, section = "logicConfig")
@@ -110,9 +79,15 @@ public interface RuneDragonsConfig extends Config {
     }
 
     @Range(min = 0, max = 99)
-    @ConfigItem(keyName = "prayerMin", name = "Prayer potions threshhold", description = "", position = 70, section = "potionConfig")
+    @ConfigItem(keyName = "prayerMin", name = "Prayer threshold (Min)", description = "", position = 70, section = "potionConfig")
     default int prayerMin() {
         return 20;
+    }
+
+    @Range(min = 0, max = 99)
+    @ConfigItem(keyName = "prayerMax", name = "Prayer threshold (Max)", description = "", position = 71, section = "potionConfig")
+    default int prayerMax() {
+        return 35;
     }
 
     @ConfigItem(keyName = "foodID", name = "Food ID", description = "ID of food to withdraw.", position = 79, section = "potionConfig")
@@ -126,8 +101,14 @@ public interface RuneDragonsConfig extends Config {
     }
 
     @Range(min = 0, max = 99)
-    @ConfigItem(keyName = "eatMin", name = "Food threshhold", description = "", position = 81, section = "potionConfig")
+    @ConfigItem(keyName = "eatMin", name = "Food threshold (Min)", description = "", position = 81, section = "potionConfig")
     default int eatMin() {
+        return 60;
+    }
+
+    @Range(min = 0, max = 99)
+    @ConfigItem(keyName = "eatMin", name = "Food threshold (Max)", description = "", position = 82, section = "potionConfig")
+    default int eatMax() {
         return 70;
     }
 

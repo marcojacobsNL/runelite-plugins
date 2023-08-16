@@ -5,7 +5,6 @@ import com.koffee.EthanApiPlugin.EthanApiPlugin;
 import com.koffee.Packets.MousePackets;
 import com.koffee.Packets.WidgetPackets;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -53,6 +52,10 @@ public class BankInteraction {
         EthanApiPlugin.getClient().setVarbit(WITHDRAW_QUANTITY, amount);
     }
 
+    public static void withdraw1(Widget item) {
+        BankInteraction.useItem(item, "Withdraw-1");
+    }
+
     public static boolean useItemIndex(int index, String... actions) {
         return Bank.search().indexIs(index).first().flatMap(item ->
         {
@@ -69,11 +72,5 @@ public class BankInteraction {
         MousePackets.queueClickPacket();
         WidgetPackets.queueWidgetAction(item, actions);
         return true;
-    }
-
-    public static void depositInventory() {
-        Widget widget = EthanApiPlugin.getClient().getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
-        MousePackets.queueClickPacket();
-        WidgetPackets.queueWidgetAction(widget, "Deposit", "Deposit inventory");
     }
 }

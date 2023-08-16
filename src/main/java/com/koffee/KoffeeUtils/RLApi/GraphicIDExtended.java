@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.RLApi;
+package com.koffee.KoffeeUtils.RLApi;
 
 public final class GraphicIDExtended {
     public static final int POISON_SPLAT = 184;

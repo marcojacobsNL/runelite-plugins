@@ -1,4 +1,4 @@
-package com.koffee.RuneDragons.src.main.java.com.koffee.utils;
+package com.koffee.KoffeeUtils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,13 +31,13 @@ public class CalculationUtils {
         return Math.min(min, max) + (n == 0 ? 0 : random.nextInt(n));
     }
 
-    public int getRandomIntBetweenRange(int min, int max) {
+    public static int getRandomIntBetweenRange(int min, int max) {
         //return (int) ((Math.random() * ((max - min) + 1)) + min); //This does not allow return of negative values
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
     //Ganom's function, generates a random number allowing for curve and weight
-    public long randomDelay(boolean weightedDistribution, int min, int max, int deviation, int target) {
+    public static long randomDelay(boolean weightedDistribution, int min, int max, int deviation, int target) {
         if (weightedDistribution) {
             /* generate a gaussian random (average at 0.0, std dev of 1.0)
              * take the absolute value of it (if we don't, every negative value will be clamped at the minimum value)
@@ -51,7 +51,7 @@ public class CalculationUtils {
         }
     }
 
-    private double clamp(double val, int min, int max) {
+    private static double clamp(double val, int min, int max) {
         return Math.max(min, Math.min(max, val));
     }
 }

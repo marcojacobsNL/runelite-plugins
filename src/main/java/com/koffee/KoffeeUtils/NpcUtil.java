@@ -1,4 +1,4 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.API;
+package com.koffee.KoffeeUtils;
 
 import com.koffee.EthanApiPlugin.Collections.NPCs;
 import com.koffee.EthanApiPlugin.Collections.query.NPCQuery;
@@ -14,6 +14,12 @@ public class NpcUtil {
         } else {
             return nameContainsNoCase(name).nearestToPlayer();
         }
+    }
+
+    public static Optional<NPC> findNearestAttackableNpc(String name) {
+        return NPCs.search()
+                .filter(npc -> npc.getName() != null && npc.getName().toLowerCase().contains(name.toLowerCase()) && npc.getInteracting() == null && npc.getHealthRatio() != 0)
+                .nearestToPlayer();
     }
 
     public static NPCQuery nameContainsNoCase(String name) {

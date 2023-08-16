@@ -1,15 +1,14 @@
-package com.koffee.KoffeeUtils.src.main.java.com.plugins.API;
+package com.koffee.KoffeeUtils;
 
 import com.koffee.EthanApiPlugin.Collections.Inventory;
 import com.koffee.EthanApiPlugin.Collections.query.ItemQuery;
+import com.koffee.EthanApiPlugin.EthanApiPlugin;
 import com.koffee.Packets.MousePackets;
 import com.koffee.Packets.WidgetPackets;
+import net.runelite.api.Varbits;
 import net.runelite.api.widgets.Widget;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class InventoryUtil {
     public static boolean useItemNoCase(String name, String... actions) {
@@ -45,7 +44,7 @@ public class InventoryUtil {
         if (caseSensitive) {
             return Inventory.search().filter(widget -> widget.getName().equals(name)).first();
         } else {
-            return Inventory.search().filter(widget -> widget.getName().toLowerCase().equals(name.toLowerCase())).first();
+            return Inventory.search().filter(widget -> widget.getName().equalsIgnoreCase(name)).first();
         }
     }
 
@@ -89,7 +88,7 @@ public class InventoryUtil {
         return getItemAmount(name, stacked) >= amount;
     }
 
-    public static boolean hasItems(String ...names) {
+    public static boolean hasItems(String... names) {
         for (String name : names) {
             if (!hasItem(name)) {
                 return false;
@@ -99,7 +98,7 @@ public class InventoryUtil {
         return true;
     }
 
-    public static boolean hasAnyItems(String ...names) {
+    public static boolean hasAnyItems(String... names) {
         for (String name : names) {
             if (hasItem(name)) {
                 return true;
@@ -134,7 +133,60 @@ public class InventoryUtil {
     public static boolean isFull() {
         return emptySlots() <= 0;
     }
+
     public static boolean isEmpty() {
         return emptySlots() >= 28;
+    }
+
+
+    public static boolean runePouchContains(int id) {
+        Set<Integer> runePouchIds = new HashSet<>();
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE1) != 0) {
+            runePouchIds.add(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE1)).getItemId());
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE2) != 0) {
+            runePouchIds.add(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE2)).getItemId());
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE3) != 0) {
+            runePouchIds.add(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE3)).getItemId());
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE4) != 0) {
+            runePouchIds.add(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE4)).getItemId());
+        }
+        for (int runePouchId : runePouchIds) {
+            if (runePouchId == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean runePouchContains(Collection<Integer> ids) {
+        for (int runeId : ids) {
+            if (!runePouchContains(runeId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static int runePouchQuanitity(int id) {
+        Map<Integer, Integer> runePouchSlots = new HashMap<>();
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE1) != 0) {
+            runePouchSlots.put(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE1)).getItemId(), EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_AMOUNT1));
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE2) != 0) {
+            runePouchSlots.put(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE2)).getItemId(), EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_AMOUNT2));
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE3) != 0) {
+            runePouchSlots.put(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE3)).getItemId(), EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_AMOUNT3));
+        }
+        if (EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE4) != 0) {
+            runePouchSlots.put(Runes.getRune(EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_RUNE4)).getItemId(), EthanApiPlugin.getClient().getVarbitValue(Varbits.RUNE_POUCH_AMOUNT4));
+        }
+        if (runePouchSlots.containsKey(id)) {
+            return runePouchSlots.get(id);
+        }
+        return 0;
     }
 }
