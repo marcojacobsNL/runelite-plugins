@@ -1,13 +1,16 @@
 package com.koffee.superglass;
 
-import com.koffee.EthanApiPlugin.Collections.*;
-import com.koffee.EthanApiPlugin.EthanApiPlugin;
-import com.koffee.InteractionApi.BankInteraction;
-import com.koffee.InteractionApi.NPCInteraction;
-import com.koffee.InteractionApi.TileObjectInteraction;
-import com.koffee.PacketUtils.PacketUtilsPlugin;
-import com.koffee.Packets.MousePackets;
-import com.koffee.Packets.WidgetPackets;
+import com.example.EthanApiPlugin.Collections.Bank;
+import com.example.EthanApiPlugin.Collections.BankInventory;
+import com.example.EthanApiPlugin.Collections.NPCs;
+import com.example.EthanApiPlugin.Collections.TileObjects;
+import com.example.EthanApiPlugin.EthanApiPlugin;
+import com.example.InteractionApi.BankInteraction;
+import com.example.InteractionApi.NPCInteraction;
+import com.example.InteractionApi.TileObjectInteraction;
+import com.example.PacketUtils.PacketUtilsPlugin;
+import com.example.Packets.MousePackets;
+import com.example.Packets.WidgetPackets;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import lombok.SneakyThrows;
