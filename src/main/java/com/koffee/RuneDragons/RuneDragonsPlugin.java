@@ -83,8 +83,6 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @Slf4j
 public class RuneDragonsPlugin extends Plugin
 {
-
-
 	// Variables
 	// models
 	public static Player player;
@@ -237,11 +235,11 @@ public class RuneDragonsPlugin extends Plugin
 			case FIND_BANK:
 				interactWithBank();
 				break;
-			case WITHDRAW:
-				withdrawItems();
-				break;
 			case DEPOSIT:
 				depositItems();
+				break;
+			case WITHDRAW:
+				withdrawItems();
 				break;
 		}
 	}
@@ -317,7 +315,7 @@ public class RuneDragonsPlugin extends Plugin
 	}
 
 	// Utils
-	private State getCurrentState()
+	public State getCurrentState()
 	{
 		if (timeout > 0)
 		{
@@ -492,6 +490,10 @@ public class RuneDragonsPlugin extends Plugin
 				if (config.debugMode())
 				{
 					koffeeUtils.sendDebugMessage("Main weapon is not null!");
+					koffeeUtils.sendDebugMessage("Spec is " + (client.getVarpValue(VarPlayer.SPECIAL_ATTACK_PERCENT)));
+					koffeeUtils.sendDebugMessage("Main weapon is " + mainWeapon.getId());
+					koffeeUtils.sendDebugMessage("HP is " + getNpcHealth(currentNPC, 330));
+					koffeeUtils.sendDebugMessage("Empty slots is " + InventoryUtil.emptySlots());
 				}
 				if (currentNPC == player.getInteracting() &&
 					(client.getVarpValue(VarPlayer.SPECIAL_ATTACK_PERCENT) >= config.specTreshhold() * 10) &&
@@ -507,7 +509,7 @@ public class RuneDragonsPlugin extends Plugin
 				}
 				if (mainWeapon.getId() == config.specId() && client.getVarpValue(VarPlayer.SPECIAL_ATTACK_PERCENT) >= config.specTreshhold() * 10)
 				{
-					if (currentNPC == player.getInteracting() && getNpcHealth(currentNPC, 330) >= config.specHp() && client.getVarpValue(VarPlayer.SPECIAL_ATTACK_ENABLED) == 0)
+					if (currentNPC == player.getInteracting() && getNpcHealth(currentNPC, 330) >= config.specHp() && EthanApiPlugin.getClient().getVarpValue(VarPlayer.SPECIAL_ATTACK_ENABLED) == 0)
 					{
 						return SubState.USE_SPECIAL;
 					}
@@ -557,10 +559,6 @@ public class RuneDragonsPlugin extends Plugin
 					return SubState.TELE_EDGE;
 				}
 				if (client.getBoostedSkillLevel(Skill.PRAYER) < client.getRealSkillLevel(Skill.PRAYER) && config.usePOHpool())
-				{
-					return SubState.DRINK_POOL;
-				}
-				if (client.getBoostedSkillLevel(Skill.HITPOINTS) < client.getRealSkillLevel(Skill.HITPOINTS) && config.usePOHpool())
 				{
 					return SubState.DRINK_POOL;
 				}
@@ -637,10 +635,6 @@ public class RuneDragonsPlugin extends Plugin
 			overlayManager.add(runeDragonsOverlay);
 			initInventory();
 			timer = Instant.now();
-			if (!shouldRestock())
-			{
-				deposited = true;
-			}
 			started = true;
 		}
 		else if (!config.startButton() && started)
@@ -786,7 +780,7 @@ public class RuneDragonsPlugin extends Plugin
 		return status;
 	}
 
-	protected boolean shouldRestock()
+	public boolean shouldRestock()
 	{
 		if (!InventoryUtil.hasItem(config.foodID()))
 		{
@@ -808,14 +802,6 @@ public class RuneDragonsPlugin extends Plugin
 			if (config.debugMode())
 			{
 				koffeeUtils.sendDebugMessage("We are missing spec weapon");
-			}
-			return true;
-		}
-		if (config.useVengeance() && (!config.useDivinePouch() && !InventoryUtil.hasItem(ItemID.RUNE_POUCH) || (config.useDivinePouch() && !InventoryUtil.hasItem(ItemID.DIVINE_RUNE_POUCH))))
-		{
-			if (config.debugMode())
-			{
-				koffeeUtils.sendDebugMessage("We are missing rune pouch");
 			}
 			return true;
 		}
@@ -896,21 +882,6 @@ public class RuneDragonsPlugin extends Plugin
 	private void initInventory()
 	{
 		inventorySetup.clear();
-		if (config.useVengeance())
-		{
-			if (config.useDivinePouch())
-			{
-				inventorySetup.add(ItemID.DIVINE_RUNE_POUCH);
-			}
-			else
-			{
-				inventorySetup.add(ItemID.RUNE_POUCH);
-			}
-		}
-		if (config.superantifire())
-		{
-			inventorySetup.add(ItemID.EXTENDED_SUPER_ANTIFIRE4);
-		}
 		if (!config.superantifire())
 		{
 			inventorySetup.add(ItemID.EXTENDED_ANTIFIRE4);
@@ -918,10 +889,6 @@ public class RuneDragonsPlugin extends Plugin
 		if (config.supercombats())
 		{
 			inventorySetup.add(ItemID.DIVINE_SUPER_COMBAT_POTION4);
-		}
-		if (!config.supercombats())
-		{
-			inventorySetup.add(ItemID.SUPER_COMBAT_POTION4);
 		}
 		if (config.useSpec())
 		{
@@ -959,7 +926,7 @@ public class RuneDragonsPlugin extends Plugin
 		{
 			koffeeUtils.sendDebugMessage("We are depositing our items");
 		}
-		BankUtil.depositAllExcept(inventorySetup);
+		BankUtil.depositInventory();
 		if (!BankUtil.containsExcept(inventorySetup) || InventoryUtil.isEmpty())
 		{
 			deposited = true;
@@ -1104,6 +1071,7 @@ public class RuneDragonsPlugin extends Plugin
 
 	private void teleportLith()
 	{
+		deposited = false;
 		Optional<TileObject> digsite = ObjectUtil.getNearest(33418);
 		digsite.ifPresent(tileObject -> {
 			TileObjectInteraction.interact(tileObject, "Lithkren");
